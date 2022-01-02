@@ -14,10 +14,12 @@ class App extends Component {
 		super(props);
 		this.state = {
 			data: [
-				{name: 'Alex', salary: 2000, increase: false, rise: false, id: 1},
-				{name: 'John', salary: 4000, increase: true, rise: false, id: 2},
+				{name: 'Alex', salary: 500, increase: false, rise: true, id: 1},
+				{name: 'John', salary: 4000, increase: true, rise: true, id: 2},
 				{name: 'Brandon', salary: 5500, increase: false, rise: false, id: 3},
-			]
+			],
+			term: '',
+			filter: 'all'
 		}
 		this.maxId = 4
 	}
@@ -28,7 +30,7 @@ class App extends Component {
 		}))
 	}
 
-	onAddEmployee = ({name, salary}) => {
+	onAddEmp = ({name, salary}) => {
 		this.setState(({data}) => ({
 			data: [...data, {name, salary, increase: false, rise: false, id: this.maxId += 1}]
 		}))
@@ -45,11 +47,42 @@ class App extends Component {
 		}))
 	}
 
+	onSearchEmp = (items, value) => {
+		if (!value) {
+			return items
+		}
+
+		return items.filter(item => {
+			return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1
+		})
+	}
+
+	setSearch = (term) => {
+		this.setState({term})
+	}
+
+	onFilterEmp = (items, filter) => {
+		switch (filter) {
+			case 'rise':
+				return items.filter(item => item.rise)
+			case 'rich':
+				return items.filter(item => item.salary > 1000)
+			default:
+				return items
+		}
+	}
+
+	setFilter = (filter) => {
+		this.setState({filter})
+	}
+
 	render() {
-		const {data} = this.state
+		const {data, term, filter} = this.state
 
 		const total = data.length
 		const toIncrease = data.filter(item => item.increase).length
+		const visibleData = this.onFilterEmp(this.onSearchEmp(data, term), filter)
+
 		return (
 			<div className="app">
 				<AppInfo
@@ -58,16 +91,18 @@ class App extends Component {
 				/>
 
 				<div className="search-panel">
-					<SearchPanel/>
-					<AppFilter/>
+					<SearchPanel setSearch={this.setSearch}/>
+					<AppFilter
+						filter={filter}
+						setFilter={this.setFilter}/>
 				</div>
 
 				<EmployeesList
 					onToggleProp={this.onToggleProp}
 					onDelete={this.onDelete}
-					data={data}/>
+					data={visibleData}/>
 				<EmployeesAddForm
-					onAddEmployee={this.onAddEmployee}
+					onAddEmp={this.onAddEmp}
 				/>
 			</div>
 		)

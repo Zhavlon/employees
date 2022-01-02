@@ -22,7 +22,7 @@ const EmployeesListItem = (props) => {
 			<div className='d-flex justify-content-center align-items-center'>
 				<button
 					onClick={onToggleProp}
-					data-toggle='rise'
+					data-toggle='increase'
 					type="button"
 					className="btn-cookie btn-sm ">
 					<i className="fas fa-cookie"></i>
